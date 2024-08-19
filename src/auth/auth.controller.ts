@@ -16,7 +16,7 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(@Body() loginDto: any) {
+  async login(@Body() loginDto: { username: string; password: string }) {
     const user = await this.authService.validateUser(
       loginDto.username,
       loginDto.password,
@@ -28,6 +28,7 @@ export class AuthController {
     // Générer un JWT token ici ou retourner les infos utilisateur selon tes besoins
     const payload = { username: user.username, sub: user.id };
     return {
+      user: user,
       access_token: this.jwtService.sign(payload),
     };
   }
