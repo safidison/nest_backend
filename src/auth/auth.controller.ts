@@ -1,18 +1,32 @@
-import { Body, Controller, Post, UnauthorizedException } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from '../users';
 import { JwtService } from '@nestjs/jwt';
-import { Public } from '../config';
+import { CurrentUser, Public } from '../config';
 import { ConfigService } from '@nestjs/config';
+import { UsersService } from '../users/users.service';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
+    private readonly userService: UsersService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
 
+  @Get()
+  async auth(
+    @CurrentUser() user: { sub: number; email: string; username: string },
+  ) {
+    return { user: await this.userService.findOneById(user.sub) };
+  }
   @Public()
   @Post('signup')
   async signUp(@Body() createUserDto: CreateUserDto) {
@@ -21,9 +35,9 @@ export class AuthController {
 
   @Public()
   @Post('login')
-  async login(@Body() loginDto: { username: string; password: string }) {
+  async login(@Body() loginDto: { email: string; password: string }) {
     const user = await this.authService.validateUser(
-      loginDto.username,
+      loginDto.email,
       loginDto.password,
     );
     if (!user) {
@@ -31,7 +45,11 @@ export class AuthController {
     }
 
     // Générer un JWT token ici ou retourner les infos utilisateur selon tes besoins
-    const payload = { username: user.username, sub: user.id };
+    const payload = {
+      email: user.email,
+      sub: user.id,
+      username: user.username,
+    };
 
     const access_token = await this.jwtService.signAsync(payload, {
       expiresIn: `${this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME')}s`,

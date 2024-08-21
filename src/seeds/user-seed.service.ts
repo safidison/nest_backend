@@ -30,18 +30,21 @@ export class UserSeedService {
     const users = [
       {
         username: 'admin',
+        name: 'admin',
         password: 'admin',
         email: 'admin@gmail.com',
         role: adminRole,
       },
       {
         username: 'moderator',
+        name: 'moderator',
         password: 'moderator',
         email: 'moderator@gmail.com',
         role: moderatorRole,
       },
       {
         username: 'user',
+        name: 'user',
         password: 'user',
         email: 'user@gmail.com',
         role: userRole,

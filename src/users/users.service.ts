@@ -43,14 +43,28 @@ export class UsersService {
     });
   }
 
-  async findOneByUsername(username: string): Promise<User> {
+  async findOneByUsername(email: string): Promise<User> {
     const user = await this.usersRepository.findOne({
-      where: { username },
+      where: { email },
       relations: ['role'],
     });
     if (!user) {
-      throw new NotFoundException(`User with username ${username} not found`);
+      throw new NotFoundException(`User with username ${email} not found`);
     }
     return user;
+  }
+
+  async findOneByEmail(email: string): Promise<User | undefined> {
+    return this.usersRepository.findOne({
+      where: { email },
+      relations: ['role'], // Inclut les relations si nécessaire
+    });
+  }
+
+  async findOneById(id: number): Promise<User | undefined> {
+    return this.usersRepository.findOne({
+      where: { id },
+      relations: ['role'], // Inclut les relations si nécessaire
+    });
   }
 }
