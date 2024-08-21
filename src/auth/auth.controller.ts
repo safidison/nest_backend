@@ -27,6 +27,24 @@ export class AuthController {
   ) {
     return { user: await this.userService.findOneById(user.sub) };
   }
+
+  @Public()
+  @Post('password/email')
+  async requestPasswordReset(@Body('email') email: string): Promise<any> {
+    return await this.userService.requestPasswordReset(email);
+  }
+
+  @Public()
+  @Post('password/reset')
+  async resetPasswordReset(
+    @Body() passDto: { token: string; password: string },
+  ): Promise<any> {
+    return await this.userService.resetPassword(
+      passDto.token,
+      passDto.password,
+    );
+  }
+
   @Public()
   @Post('signup')
   async signUp(@Body() createUserDto: CreateUserDto) {

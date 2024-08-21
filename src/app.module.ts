@@ -9,6 +9,7 @@ import { UsersModule } from './users/users.module';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { AuthGuard } from './auth/auth.guard';
 import { AppInterceptor } from './app.interceptor';
+import { EmailModule } from './email/email.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { AppInterceptor } from './app.interceptor';
     CustomConfigModule,
     AuthModule,
     UsersModule,
+    EmailModule,
   ],
   controllers: [AppController],
   providers: [

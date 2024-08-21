@@ -1,5 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { Role } from './role.entity';
+import { PasswordResetToken } from './password-reset-token.entity';
 
 @Entity()
 export class User {
@@ -23,4 +30,10 @@ export class User {
 
   @ManyToOne(() => Role, (role) => role.users)
   role: Role;
+
+  @OneToMany(() => PasswordResetToken, (passwordToken) => passwordToken.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  passwordResetTokens: PasswordResetToken[];
 }

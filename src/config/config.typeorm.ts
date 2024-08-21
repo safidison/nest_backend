@@ -4,7 +4,7 @@ import {
   TypeOrmModuleAsyncOptions,
 } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { User } from '../entities';
+import { PasswordResetToken, User } from "../entities";
 import { Role } from '../entities';
 
 export const typeOrmConfigAsync: TypeOrmModuleAsyncOptions = {
@@ -19,7 +19,7 @@ export const typeOrmConfigAsync: TypeOrmModuleAsyncOptions = {
     username: configService.get<string>('DB_USERNAME'),
     password: configService.get<string>('DB_PASSWORD'),
     database: configService.get<string>('DB_DATABASE'),
-    entities: [User, Role],
+    entities: [User, Role, PasswordResetToken],
     synchronize: true, // Ne pas utiliser en production, car cela peut entraîner la perte de données
   }),
 };
