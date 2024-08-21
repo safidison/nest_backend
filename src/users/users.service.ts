@@ -4,17 +4,22 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto';
 import * as bcrypt from 'bcrypt';
-import { User } from '../entities';
+import { Role, User } from '../entities';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
+    @InjectRepository(Role)
+    private readonly roleRepository: Repository<Role>,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     const saltOrRounds = 10;
+    const userRole = await this.roleRepository.findOne({
+      where: { name: 'user' },
+    });
     const hashedPassword = await bcrypt.hash(
       createUserDto.password,
       saltOrRounds,
@@ -23,6 +28,7 @@ export class UsersService {
     const newUser = this.usersRepository.create({
       ...createUserDto,
       password: hashedPassword,
+      role: userRole,
     });
     return this.usersRepository.save(newUser);
   }
@@ -38,7 +44,10 @@ export class UsersService {
   }
 
   async findOneByUsername(username: string): Promise<User> {
-    const user = await this.usersRepository.findOne({ where: { username } });
+    const user = await this.usersRepository.findOne({
+      where: { username },
+      relations: ['role'],
+    });
     if (!user) {
       throw new NotFoundException(`User with username ${username} not found`);
     }
